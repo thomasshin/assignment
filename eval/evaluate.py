@@ -1,5 +1,6 @@
 import requests
 import pandas as pd
+from tqdm import tqdm
 
 def num_to_choice(n: int) -> str:
     return {1: "A", 2: "B", 3: "C", 4: "D"}[n]
@@ -8,8 +9,9 @@ def num_to_choice(n: int) -> str:
 df = pd.read_csv("data/dev.csv")
 
 correct = 0
+results = []  # ✅ 결과 저장
 
-for _, row in df.iterrows():
+for _, row in tqdm(df.iterrows(), total=len(df), desc="Evaluating"):
     query = (
         row["question"]
         + "\nA. " + row["A"]
@@ -26,8 +28,22 @@ for _, row in df.iterrows():
     pred = res.json()["answer"]
     gt = num_to_choice(int(row["answer"]))
 
-    if pred == gt:
+    correct_flag = pred == gt
+    if correct_flag:
         correct += 1
 
+    # ✅ 로그 저장
+    results.append(
+        f"Q: {row['question']}\nPred: {pred} | GT: {gt} | {'O' if correct_flag else 'X'}\n"
+    )
+
 acc = correct / len(df)
-print(f"Accuracy: {acc}")
+
+with open("eval_results.txt", "w", encoding="utf-8") as f:
+    for r in results:
+        f.write(r + "\n")
+
+    f.write(f"\nFinal Accuracy: {acc}\n")
+
+print(f"\nAccuracy: {acc}")
+print("Saved to eval_results.txt")

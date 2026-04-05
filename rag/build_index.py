@@ -16,12 +16,15 @@ embeddings: list[list[float]] = []
 for _, row in df.iterrows():
     # ✅ 선택지 포함해서 텍스트 구성
     text = (
-        str(row["question"])
-        + "\nA. " + str(row["A"])
-        + "\nB. " + str(row["B"])
-        + "\nC. " + str(row["C"])
-        + "\nD. " + str(row["D"])
-    )
+    "법률 문제:\n"
+    + str(row["question"])
+    + "\n\n선택지:\n"
+    + "A. " + str(row["A"])
+    + "\nB. " + str(row["B"])
+    + "\nC. " + str(row["C"])
+    + "\nD. " + str(row["D"])
+    + "\n\n정답: " + str(row["answer"])
+)
 
     texts.append(text)
 

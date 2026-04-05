@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+pandas
+faiss-cpu
+openai
+pydantic
+requests
+numpy
