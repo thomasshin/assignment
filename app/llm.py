@@ -3,9 +3,12 @@ from openai import OpenAI
 client = OpenAI()
 
 def ask_llm(prompt: str) -> str:
-    res = client.chat.completions.create(
+    response = client.chat.completions.create(
         model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.7
+        messages=[
+            {"role": "system", "content": "You are a legal expert."},
+            {"role": "user", "content": prompt},
+        ],
+        temperature=0,
     )
-    return res.choices[0].message.content
+    return response.choices[0].message.content.strip()

@@ -1,30 +1,44 @@
 from app.retriever import Retriever
 from app.llm import ask_llm
-from collections import Counter
 
-retriever = Retriever()
+retriever = Retriever("db/index.faiss")
 
-def solve(query: str) -> str:
-    contexts = retriever.search(query, k=5)
 
-    prompt = f"""
-You are a Korean criminal law expert.
+def build_prompt(query: str, contexts: list[str]) -> str:
+    context_str = "\n\n".join(contexts)
 
-Solve the multiple choice question.
+    return f"""
+You are solving a Korean legal multiple-choice question.
+
+Context:
+{context_str}
 
 Question:
 {query}
 
-Relevant examples:
-{contexts}
+Answer strictly one of A, B, C, D.
 
-Think step by step and answer ONLY A, B, C, or D.
+Return only the letter.
 """
 
-    answers = []
 
-    for _ in range(3):  # self-consistency
-        res = ask_llm(prompt)
-        answers.append(res.strip())
+def run_agent(query: str) -> str:
+    contexts = retriever.retrieve(query, k=10)
 
-    return Counter(answers).most_common(1)[0][0]
+    prompt = f"""
+You are a legal expert solving a multiple-choice question.
+
+Use the context to answer.
+
+Context:
+{chr(10).join(contexts)}
+
+Question:
+{query}
+
+Think briefly and output ONLY one letter: A, B, C, or D.
+"""
+
+    result = ask_llm(prompt)
+
+    return result.strip()[0]
