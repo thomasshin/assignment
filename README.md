@@ -24,8 +24,9 @@ docker compose up --build
 python eval/evaluate.py
 ```
 
-##Results
+## Results
 Accuracy: 0.5714285714285714
+
 Baseline: 0.515831
 
 check eval_results.txt for more
